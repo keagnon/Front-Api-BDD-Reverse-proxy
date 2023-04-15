@@ -14,7 +14,7 @@ services:
       - "8080"
 
   db:
-    image: mariadb
+    image: mariadb #image mariadb
     environment:
       MYSQL_DATABASE: mydatabase
       MYSQL_USER: myuser
