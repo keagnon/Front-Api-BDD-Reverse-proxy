@@ -32,7 +32,7 @@ services:
 
   front:
     build:
-      context: front
+      context: front #Voir dossier front fichier Dockerfile créer
     volumes:
       - ./front/src:/app/src
       - /app/node_modules
