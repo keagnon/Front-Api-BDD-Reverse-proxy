@@ -18,5 +18,6 @@ Enfin, le fichier YAML définit un volume "db_data" pour stocker les données de
 
 En utilisant Docker Compose, cet environnement peut être facilement créé et déployé en utilisant la commande "docker-compose up -d --build".
 
-Remarques : Pour un premier build il se peut que l'api mette 2-4 minute avant de se lancer c'est normal. Car, dans le premier build, le temps que la base de données ce crée et migre toute ses données via les scripts fournie prend 2-4 min il y a un healthcheck à valider sur la bdd avant que l'api ce lance. Pour les lancement suivant il devrait pas durée aussi longtemps vu que la base de donnée est déjà crée.
-si l'api ne se lance pas du premier coup lors du premier build veillez juste la relancer une seconde fois la connection est refuser car la base de donnée et en train de se reconstruire avec les script fournie.
+Remarques : Il est possible que lors du premier build, l'API prenne entre 2 et 4 minutes avant de se lancer. Cela est normal car durant le premier build, la base de données est créée et toutes ses données sont migrées via les scripts fournis, ce qui peut prendre du temps. Il y a également un healthcheck à valider sur la base de données avant que l'API puisse se lancer. Pour les lancements suivants, cela ne devrait pas prendre autant de temps car la base de données est déjà créée.
+
+Dans le cas où l'API ne se lance pas du premier coup lors du premier build, il suffit de la relancer une seconde fois. La connexion est refusée car la base de donnée est en train de se reconstruire avec les scripts fournis.
