@@ -10,5 +10,6 @@ COPY java/matlasAPI-0.0.1-SNAPSHOT.jar .
 # Compilez l'application avec Maven
 #RUN ./mvnw package
 
+
 # Démarrez l'application
 CMD ["java", "-jar", "./matlasAPI-0.0.1-SNAPSHOT.jar"]
