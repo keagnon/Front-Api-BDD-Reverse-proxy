@@ -1,53 +1,54 @@
-version: '3.1'
+version: '3.1' # Version du format de configuration de Docker Compose
 
-services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      url: "jdbc:mariadb://db:3306/mydatabase"
-    expose:
-      - "8080"
+services: # Définition des services composant l'application
 
-  db:
-    image: mariadb #image mariadb
-    environment:
-      MYSQL_DATABASE: mydatabase
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: mypassword
-      MYSQL_ROOT_PASSWORD: myrootpassword
-    volumes:
-      - db_data:/var/lib/mysql
-      - ./scripts:/docker-entrypoint-initdb.d
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    healthcheck:
-      test: ["CMD-SHELL", "mysql -h db -u root -p'myrootpassword' -e 'SELECT 1 FROM mydatabase.users;'"]
-      interval: 10s
-      timeout: 3s
-      retries: 30
+  api: # Service "api"
+    build: # Configuration du build de l'image Docker
+      context: . # Dossier courant
+      dockerfile: Dockerfile # Fichier Dockerfile utilisé pour construire l'image
+    depends_on: # Définition des dépendances du service
+      db: # Service "db"
+        condition: service_healthy # Condition de disponibilité de "db" pour "api"
+    environment: # Variables d'environnement pour le service
+      url: "jdbc:mariadb://db:3306/mydatabase" # URL de la base de données
+    expose: # Port(s) exposé(s) par le service
+      - "8080" # Port 8080
 
-  front:
-    build:
-      context: front #Voir dossier front fichier Dockerfile créer
-    volumes:
-      - ./front/src:/app/src
-      - /app/node_modules
-    expose:
-      - "3000"
+  db: # Service "db"
+    image: mariadb # Image Docker utilisée pour le service
+    environment: # Variables d'environnement pour le service
+      MYSQL_DATABASE: mydatabase # Nom de la base de données créée
+      MYSQL_USER: myuser # Nom de l'utilisateur de la base de données
+      MYSQL_PASSWORD: mypassword # Mot de passe de l'utilisateur de la base de données
+      MYSQL_ROOT_PASSWORD: myrootpassword # Mot de passe de l'utilisateur "root" de la base de données
+    volumes: # Configuration des volumes montés dans le conteneur
+      - db_data:/var/lib/mysql # Volume de données de la base de données
+      - ./scripts:/docker-entrypoint-initdb.d # Scripts SQL exécutés lors de la création de la base de données
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci # Options de configuration de la base de données
+    healthcheck: # Vérification de l'état de santé du service
+      test: ["CMD-SHELL", "mysql -h db -u root -p'myrootpassword' -e 'SELECT 1 FROM mydatabase.users;'"] # Commande de test d'intégrité de la base de données
+      interval: 10s # Intervalle entre chaque test d'intégrité
+      timeout: 3s # Délai maximal d'attente avant considération de l'échec du test d'intégrité
+      retries: 30 # Nombre maximal de tentatives de test d'intégrité
 
-  proxy:
-    image: nginx
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - api
-      - front
+  front: # Service "front"
+    build: # Configuration du build de l'image Docker
+      context: front # Dossier "front" (contenant le fichier Dockerfile)
+    volumes: # Configuration des volumes montés dans le conteneur
+      - ./front/src:/app/src # Code source de l'application front-end
+      - /app/node_modules # Dossier node_modules de l'application
+    expose: # Port(s) exposé(s) par le service
+      - "3000" # Port 3000
 
-volumes:
+  proxy: # Service "proxy"
+    image: nginx # Image Docker utilisée pour le service
+    ports: # Ports exposés par le service
+      - "80:80" # Port 80
+    volumes: # Configuration des volumes montés dans le conteneur
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro # Configuration Nginx
+    depends_on: # Définition des dépendances du service
+      - api # Service "api"
+      - front # Service "front"
+
+volumes: # Définition des volumes
   db_data:
